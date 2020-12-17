@@ -6,6 +6,8 @@ public class MovePlayer : MonoBehaviour
 {
 
     public CharacterController controller;
+    private AudioSource playerAudio;
+    public AudioClip jumpSound;
     public float speed = 12f;
     private float gravity = -9.81f * 3;
     private float jumpHeight = 2;
@@ -14,34 +16,51 @@ public class MovePlayer : MonoBehaviour
     public Transform groundCheck;
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
-    public bool isGrounded;
+    private bool isGrounded;
+    private GameManager gameManagerScr;
 
+    private void Start()
+    {
+        //retieveing the GameManager script
+        gameManagerScr = GameObject.Find("GameManager").GetComponent<GameManager>();
+        //get the player's audiosource
+        playerAudio = GetComponent<AudioSource>();
+
+    }
 
     // Update is called once per frame
     void Update()
     {
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-
-        if(isGrounded && velocity.y < 0)
+        //if the game is not paused
+        if (!gameManagerScr.getIsPaused()) 
         {
-            velocity.y = -2f;
+            //check if it is on the ground
+            isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+            //if that check is true and velocity is nothing then keep it on the ground
+            if (isGrounded && velocity.y < 0) { velocity.y = -2f; }
 
+            //get x and y inputs from keyboard
+            float moveX = Input.GetAxis("Horizontal");
+            float moveZ = Input.GetAxis("Vertical");
+
+            //move the game controller based on those inputs
+            Vector3 move = transform.right * moveX + transform.forward * moveZ;
+            controller.Move(move * speed * Time.deltaTime);
+                
+            //if "SPACE" is pressed and player is on the ground and game is not paused
+            if (Input.GetButtonDown("Jump") && isGrounded && !gameManagerScr.getIsPaused())
+            {
+                //play the jump sound
+                playerAudio.PlayOneShot(jumpSound, 1.0f);
+                //this equation adds an upward force
+                //resulting in a consistant height regardless of gravity
+                velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            }
+
+            //increase velocity by the gravity. Always
+            velocity.y += gravity * Time.deltaTime;
+            //move player controller by that velocity
+            controller.Move(velocity * Time.deltaTime);
         }
-
-        float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
-
-        Vector3 move = transform.right * moveX + transform.forward * moveZ;
-
-        controller.Move(move * speed * Time.deltaTime);
-
-        if(Input.GetButtonDown("Jump") && isGrounded)
-        {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-        }
-
-        velocity.y += gravity * Time.deltaTime;
-
-        controller.Move(velocity * Time.deltaTime);
     }
 }

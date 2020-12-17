@@ -1,0 +1,49 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class GameManager : MonoBehaviour
+{
+    public GameObject pauseMenu;
+    static public int levelProgress = 1;
+    public int levelset;
+    public bool isPaused = false;
+
+    private void Update()
+    {
+        //if escape is pressed it only pauses the menu
+        if (Input.GetKeyDown(KeyCode.Escape)) { isPaused = false; togglePause(); }
+    }
+    //returns the current progress
+    public int getLevelProgress() { return levelProgress; }
+
+    //returns whether the level is paused or not
+    public bool getIsPaused() { return isPaused; }
+
+    //increses the counter for the next level to unlock
+    public void nextLevel() { levelProgress = levelset; }
+
+    //reloads the lobby scene
+    public void lobbyReturn() { SceneManager.LoadScene("Lobby"); }
+
+    //increases counter for next level unlock and then reloads the lobby scene
+    public void skipLevel() { nextLevel();  lobbyReturn(); }
+
+    public void goToSource() { Application.OpenURL("https://github.com/TiernanH/Unity-College-Project--complete-"); }
+
+    //toggles the game pause, cursor state and menu
+    public void togglePause()
+    {
+        if (isPaused == true) {
+            isPaused = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            pauseMenu.SetActive(false);
+        }
+        else if (isPaused == false) { 
+            isPaused = true;
+            Cursor.lockState = CursorLockMode.None;
+            pauseMenu.SetActive(true);
+        }
+    }
+}
