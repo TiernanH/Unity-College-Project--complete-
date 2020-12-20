@@ -17,6 +17,9 @@ public class ChangeLevel : MonoBehaviour
     {
         //set the gameManager to actual
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        //this line gets a null reference exception as unity tries to rpeload the canvas renderer but can't
+        //the image is set in the UI of unity but the code itself can't see that. 
+        //This is the only error I have come across
         fade.canvasRenderer.SetAlpha(0.0f);
     }
     IEnumerator WaitBeforeNext(float seconds)

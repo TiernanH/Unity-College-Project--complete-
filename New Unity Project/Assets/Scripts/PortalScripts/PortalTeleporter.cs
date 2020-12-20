@@ -6,15 +6,10 @@ public class PortalTeleporter : MonoBehaviour
 {
     public Transform player;
     public Transform reciever;
-    private AudioSource portalAudio;
     public AudioClip teleportSound;
 
     public bool isOverlapping = false;
 
-    private void Start()
-    {
-        portalAudio = GetComponent<AudioSource>();
-    }
 
     // Update is called once per frame
     void Update()
@@ -51,8 +46,6 @@ public class PortalTeleporter : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            //play the teleport sound
-            portalAudio.PlayOneShot(teleportSound, 1.0f);
             //if the player collides with the portal then it is overlapping
             isOverlapping = true;
         }
